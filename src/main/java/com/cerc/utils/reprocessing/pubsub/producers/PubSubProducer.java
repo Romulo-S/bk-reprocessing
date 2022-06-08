@@ -1,82 +1,42 @@
-package com.cerc.utils.reprocessing.pubsub.consumers;
+package com.cerc.utils.reprocessing.pubsub.producers;
 
-import com.cerc.utils.reprocessing.controllers.PubSubMessageCaseImpl;
-import com.cerc.utils.reprocessing.models.PubSubMessage;
-import com.cerc.utils.reprocessing.controllers.PubSubMessageCase;
+import com.cerc.utils.reprocessing.pubsub.consumers.PubSubConsumer;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
 import com.google.api.gax.core.CredentialsProvider;
-import com.google.cloud.pubsub.v1.*;
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.cloud.pubsub.v1.Subscriber;
+import com.google.cloud.pubsub.v1.SubscriptionAdminClient;
+import com.google.cloud.pubsub.v1.SubscriptionAdminSettings;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.*;
-import io.quarkus.runtime.ShutdownEvent;
-import io.quarkus.runtime.StartupEvent;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import java.io.IOException;
-import java.util.Optional;
 import org.jboss.logging.Logger;
 
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
 
-@ApplicationScoped
-public class PubSubConsumer {
+public class PubSubProducer {
 
     private static final Logger LOG = Logger.getLogger(PubSubConsumer.class);
-
-    @ConfigProperty(name = "quarkus.google.cloud.project-id")
-    String projectId;// Inject the projectId property from application.properties
 
     private TopicName topicName;
     private Subscriber subscriber;
 
-
-    PubSubMessageCaseImpl pubSubMessageCase = new PubSubMessageCaseImpl();
-
     @Inject
     CredentialsProvider credentialsProvider;
 
-    void onStart(@Observes StartupEvent ev) throws IOException {
-        // Init topic and subscription, the topic must have been created before
+    public void sendMessage(String projectId) throws IOException, InterruptedException {
+        // Init a publisher to the topic
+
+        ProjectSubscriptionName subscriptionName = initSubscription(projectId);
 
         topicName = TopicName.of(projectId, "contracts-created-topic");
-        ProjectSubscriptionName subscriptionName = initSubscription();
 
-        Jsonb jsonb = JsonbBuilder.create();
-
-        // Subscribe to PubSub
-        MessageReceiver receiver = (message, consumer) -> {
-            PubSubMessage pubSubMessage = jsonb.fromJson(message.getData().toStringUtf8(), PubSubMessage.class);
-            LOG.infov("Got message {0}", message.getData().toStringUtf8());
-            try {
-                pubSubMessageCase.reprocess(pubSubMessage,this);
-            } catch (IOException e) {
-                consumer.nack();
-            }
-            consumer.ack();
-
-        };
-        subscriber = Subscriber.newBuilder(subscriptionName, receiver).build();
-        subscriber.startAsync().awaitRunning();
-    }
-
-    void onStop(@Observes ShutdownEvent ev) {
-        // Stop the subscription at destroy time
-        if (subscriber != null) {
-            subscriber.stopAsync();
-        }
-    }
-
-    public void pubsub() throws IOException, InterruptedException {
-        // Init a publisher to the topic
         Publisher publisher = Publisher.newBuilder(topicName)
                 .setCredentialsProvider(credentialsProvider)
                 .build();
@@ -99,9 +59,7 @@ public class PubSubConsumer {
         }
     }
 
-
-
-    private ProjectSubscriptionName initSubscription() throws IOException {
+    private ProjectSubscriptionName initSubscription(String projectId) throws IOException {
         // List all existing subscriptions and create the 'test-subscription' if needed
         ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, "contracts-created-topic");
         SubscriptionAdminSettings subscriptionAdminSettings = SubscriptionAdminSettings.newBuilder()
@@ -119,6 +77,4 @@ public class PubSubConsumer {
         }
         return subscriptionName;
     }
-
-
 }

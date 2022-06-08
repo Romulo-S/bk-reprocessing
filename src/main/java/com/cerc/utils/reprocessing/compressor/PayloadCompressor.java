@@ -1,4 +1,4 @@
-package com.cerc.utils.reprocessing;
+package com.cerc.utils.reprocessing.compressor;
 
 import java.util.ArrayList;
 
