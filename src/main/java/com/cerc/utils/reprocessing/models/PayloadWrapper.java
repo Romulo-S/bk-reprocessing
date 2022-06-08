@@ -1,14 +1,14 @@
-package model;
+package com.cerc.utils.reprocessing.models;
 
 import java.time.LocalDate;
 
 import io.quarkus.vertx.http.runtime.devmode.Json;
 
-public class ContractPayload {
+public class PayloadWrapper {
 
     private String id;
 
-    private Type transactionType;
+    private String transactionType;
 
     private Json contract;
 
@@ -26,11 +26,11 @@ public class ContractPayload {
         this.id = id;
     }
 
-    public Type getTransactionType() {
+    public String getTransactionType() {
         return transactionType;
     }
 
-    public void setTransactionType(Type transactionType) {
+    public void setTransactionType(String transactionType) {
         this.transactionType = transactionType;
     }
 

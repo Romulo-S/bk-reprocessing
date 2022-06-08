@@ -23,6 +23,7 @@ import javax.json.bind.JsonbBuilder;
 import java.io.IOException;
 import java.util.Optional;
 import org.jboss.logging.Logger;
+import org.json.simple.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
@@ -75,13 +76,13 @@ public class PubSubConsumer {
         }
     }
 
-    public void pubsub() throws IOException, InterruptedException {
+    public void pubsub(JSONObject temp) throws IOException, InterruptedException {
         // Init a publisher to the topic
         Publisher publisher = Publisher.newBuilder(topicName)
                 .setCredentialsProvider(credentialsProvider)
                 .build();
         try {
-            ByteString data = ByteString.copyFromUtf8("my-message");// Create a new message
+            ByteString data = ByteString.copyFromUtf8(temp.toString());// Cretate a new message
             PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
             ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);// Publish the message
             ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {// Wait for message submission and log the result
