@@ -52,15 +52,9 @@ public class GenerateJson {
         return payloads;
     }
 
-    public void saveContractToFile(ArrayList<Payload> payloads, String nameComplement) {
-        for (Payload payload1 : payloads) {
-            if (payload1 != null) {
-                //WRITE down trhe file
+public void publish(){
 
-                String path = BASE_PATH + payload1.getContract().getReference().replace("/", "-") + nameComplement;
-            }
-        }
-    }
+}
 
     private void extractContractJson(FieldValueList row) throws ParseException {
         String contract = row.get("contract").getStringValue();
