@@ -26,7 +26,7 @@ public class ReprocessingCaseImpl implements ReprocessingCase{
         try {
             TableResult data = bigQueryCase.getData();
 
-            generateJson.convertToJson(data,message);
+            generateJson.getContractsToReprocess(data,message);
 
             try {
                 JSONObject temp = new JSONObject();
