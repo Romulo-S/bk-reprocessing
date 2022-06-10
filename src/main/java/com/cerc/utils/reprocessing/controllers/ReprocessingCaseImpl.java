@@ -2,6 +2,7 @@ package com.cerc.utils.reprocessing.controllers;
 
 import com.cerc.utils.reprocessing.bigquery.BigQueryCase;
 import com.cerc.utils.reprocessing.compressor.GenerateJson;
+import com.cerc.utils.reprocessing.models.Payload;
 import com.cerc.utils.reprocessing.models.PubSubMessage;
 import com.cerc.utils.reprocessing.pubsub.consumers.PubSubConsumer;
 import com.google.cloud.bigquery.TableResult;
@@ -11,6 +12,7 @@ import org.json.simple.parser.ParseException;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReprocessingCaseImpl implements ReprocessingCase{
 
@@ -26,7 +28,7 @@ public class ReprocessingCaseImpl implements ReprocessingCase{
         try {
             TableResult data = bigQueryCase.getData();
 
-            generateJson.getContractsToReprocess(data,message);
+            List<Payload> contractsToReprocess = generateJson.getContractsToReprocess(data, message);
 
             try {
                 JSONObject temp = new JSONObject();

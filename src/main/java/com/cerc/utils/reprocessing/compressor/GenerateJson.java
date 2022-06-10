@@ -9,11 +9,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.cerc.utils.reprocessing.models.Contract;
 import com.cerc.utils.reprocessing.models.Payload;
 import com.cerc.utils.reprocessing.models.PubSubMessage;
 import com.cerc.utils.reprocessing.utils.Compressor;
 import com.google.cloud.bigquery.FieldValueList;
 import com.google.cloud.bigquery.TableResult;
+import com.google.gson.Gson;
 
 public class GenerateJson {
 
@@ -55,19 +57,16 @@ public class GenerateJson {
     }
 
 
-    private void extractContractJson(FieldValueList row) throws ParseException {
+    private void extractContractJson(FieldValueList row) {
         String contract = row.get("contract").getStringValue();
+        Gson g = new Gson();
         try {
-            JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(contract);
-            this.payload.setContract(json);
-        } catch (ParseException e) {
-            LOG.error(e.getMessage());
+            Contract contractJson = g.fromJson(contract, Contract.class);
+            this.payload.setContract(contractJson);
         } catch (Exception e) {
-            byte[] compress = Compressor.compress(contract.getBytes(), 500);
-            JSONParser parser = new JSONParser();
-            JSONObject json = (JSONObject) parser.parse(compress.toString());
-            this.payload.setContract(json);
+            byte[] compressedJsonContract = Compressor.compress(contract.getBytes(), 500);
+            Contract contractJson = g.fromJson(compressedJsonContract.toString(), Contract.class);
+            this.payload.setContract(contractJson);
         }
     }
 
