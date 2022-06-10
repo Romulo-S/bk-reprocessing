@@ -47,14 +47,13 @@ public class GenerateJson {
             UUID uuid = UUID.randomUUID();
             payload.setId(uuid);
 
+            LOG.info("ContractReference: " + payload.getContract()
+                .getReference() + "RequesterTransactionId: " + payload.getRequesterTransactionId() + "TransactionId: " + payload.getId());
             payloads.add(payload);
         }
         return payloads;
     }
 
-public void publish(){
-
-}
 
     private void extractContractJson(FieldValueList row) throws ParseException {
         String contract = row.get("contract").getStringValue();
