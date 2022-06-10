@@ -31,14 +31,12 @@ public class ReprocessingCaseImpl implements ReprocessingCase{
             List<Payload> contractsToReprocess = generateJson.getContractsToReprocess(data, message);
 
             try {
-                JSONObject temp = new JSONObject();
-                projectId.pubsub(temp);
+                projectId.pubsub(contractsToReprocess);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
 
         } catch (InterruptedException | ParseException e) {
             e.printStackTrace();

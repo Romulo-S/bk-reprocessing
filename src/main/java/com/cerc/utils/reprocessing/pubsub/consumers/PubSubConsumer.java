@@ -1,6 +1,7 @@
 package com.cerc.utils.reprocessing.pubsub.consumers;
 
 import com.cerc.utils.reprocessing.controllers.PubSubMessageCaseImpl;
+import com.cerc.utils.reprocessing.models.Payload;
 import com.cerc.utils.reprocessing.models.PubSubMessage;
 import com.cerc.utils.reprocessing.controllers.PubSubMessageCase;
 import com.google.api.core.ApiFuture;
@@ -21,8 +22,10 @@ import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import org.jboss.logging.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.concurrent.TimeUnit;
@@ -76,13 +79,14 @@ public class PubSubConsumer {
         }
     }
 
-    public void pubsub(JSONObject temp) throws IOException, InterruptedException {
+    public void pubsub(List<Payload> temp) throws IOException, InterruptedException {
         // Init a publisher to the topic
         Publisher publisher = Publisher.newBuilder(topicName)
                 .setCredentialsProvider(credentialsProvider)
                 .build();
         try {
-            ByteString data = ByteString.copyFromUtf8(temp.toString());// Cretate a new message
+            String jsonStr = JSONArray.toJSONString(temp);
+            ByteString data = ByteString.copyFromUtf8(jsonStr);// Cretate a new message
             PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
             ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);// Publish the message
             ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {// Wait for message submission and log the result
