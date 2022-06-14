@@ -114,7 +114,7 @@ public class PubSubConsumer {
                 .build();
         try {
 
-            ByteString data = ByteString.copyFromUtf8(new Gson().toJson(temp));// Cretate a new message
+            ByteString data = ByteString.copyFromUtf8(new Gson().toJson(temp));// Create a new message
             PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
             ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);// Publish the message
             ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {// Wait for message submission and log the result

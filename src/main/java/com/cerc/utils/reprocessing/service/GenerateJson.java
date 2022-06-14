@@ -1,12 +1,10 @@
-package com.cerc.utils.reprocessing.compressor;
+package com.cerc.utils.reprocessing.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.cerc.utils.reprocessing.models.Contract;
