@@ -24,13 +24,8 @@ public class PubSubMessageCaseImpl implements PubSubMessageCase {
 
     String[] typeAllowed = {"UPDATE", "CREATE", "FINISH", "INACTIVATE"};
 
-    @Inject
-    private ReprocessingCase reprocessingCase;
 
-    PubSubProducer pubSubProducer = new PubSubProducer();
-
-    PubSubConsumer pubSub;
-
+    ReprocessingCaseImpl reprocessingCaseImpl = new ReprocessingCaseImpl();
 
     @Override
     public void reprocess(PubSubMessage message, PubSubConsumer projectId) throws IOException {
@@ -50,7 +45,7 @@ public class PubSubMessageCaseImpl implements PubSubMessageCase {
             if (slot == 10 || i == message.getContracts().length - 1) {
                 Instant start = Instant.now();
 
-                reprocessingCase.searchAndSend(referecesSlot, message, projectId);
+                reprocessingCaseImpl.searchAndSend(referecesSlot, message, projectId);
 
                 Instant end = Instant.now();
                 Duration timeElapsed = Duration.between(start, end);

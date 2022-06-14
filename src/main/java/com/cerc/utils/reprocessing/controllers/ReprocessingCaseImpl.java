@@ -1,6 +1,7 @@
 package com.cerc.utils.reprocessing.controllers;
 
 import com.cerc.utils.reprocessing.bigquery.BigQueryCase;
+import com.cerc.utils.reprocessing.bigquery.BigQueryCaseImpl;
 import com.cerc.utils.reprocessing.compressor.GenerateJson;
 import com.cerc.utils.reprocessing.models.Payload;
 import com.cerc.utils.reprocessing.models.PubSubMessage;
@@ -16,11 +17,8 @@ import java.util.List;
 
 public class ReprocessingCaseImpl implements ReprocessingCase{
 
-    @Inject
-    private BigQueryCase bigQueryCase;
-
-    @Inject
-    private GenerateJson generateJson;
+    BigQueryCaseImpl bigQueryCase = new BigQueryCaseImpl();
+    GenerateJson generateJson = new GenerateJson();
 
     @Override
     public void searchAndSend(ArrayList<String> referecesSlot, PubSubMessage message, PubSubConsumer projectId) {

@@ -10,6 +10,7 @@ import com.google.api.core.ApiFutures;
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.cloud.pubsub.v1.*;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.gson.Gson;
 import com.google.protobuf.ByteString;
 import com.google.pubsub.v1.*;
 import io.quarkus.runtime.ShutdownEvent;
@@ -47,6 +48,7 @@ public class PubSubConsumer {
 
     @Inject
     CredentialsProvider credentialsProvider;
+
 
     void onStart(@Observes StartupEvent ev) throws IOException {
         // Init topic and subscription, the topic must have been created before
@@ -104,6 +106,31 @@ public class PubSubConsumer {
         }
     }
 
+
+    public void sendToPubSub(PubSubMessage temp) throws IOException, InterruptedException {
+        // Init a publisher to the topic
+        Publisher publisher = Publisher.newBuilder(topicName)
+                .setCredentialsProvider(credentialsProvider)
+                .build();
+        try {
+
+            ByteString data = ByteString.copyFromUtf8(new Gson().toJson(temp));// Cretate a new message
+            PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+            ApiFuture<String> messageIdFuture = publisher.publish(pubsubMessage);// Publish the message
+            ApiFutures.addCallback(messageIdFuture, new ApiFutureCallback<String>() {// Wait for message submission and log the result
+                public void onSuccess(String messageId) {
+                    LOG.infov("published with message id {0}", messageId);
+                }
+
+                public void onFailure(Throwable t) {
+                    LOG.warnv("failed to publish: {0}", t);
+                }
+            }, MoreExecutors.directExecutor());
+        } finally {
+            publisher.shutdown();
+            publisher.awaitTermination(1, TimeUnit.MINUTES);
+        }
+    }
 
 
     private ProjectSubscriptionName initSubscription() throws IOException {
