@@ -20,9 +20,14 @@ public class BigQueryCaseImpl implements BigQueryCase{
     BigQuery bigquery; // Inject BigQuery
 
     @Override
-    public TableResult getData() throws InterruptedException{
+    public TableResult getData(String[] references) throws InterruptedException{
+
+        String referencesQuery = toString(references);
+
+
+
         QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(
-                        Constants.query)
+                        Constants.query.replace("references",referencesQuery))
                 .setUseLegacySql(false)
                 .build();
 
@@ -43,4 +48,14 @@ public class BigQueryCaseImpl implements BigQueryCase{
         return result;
 
     }
+
+    public static String toString(String[] array) {
+        String result = ""; if (array.length > 0) {
+            StringBuilder sb = new StringBuilder();
+                for (String s : array) { sb.append(s).append(",");
+            }
+                result = sb.deleteCharAt(sb.length() - 1).toString();
+        } return result;
+    }
+
 }

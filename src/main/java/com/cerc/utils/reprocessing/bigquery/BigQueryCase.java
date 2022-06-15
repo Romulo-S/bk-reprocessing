@@ -4,5 +4,5 @@ import com.google.cloud.bigquery.TableResult;
 
 public interface BigQueryCase {
 
-    public TableResult getData() throws InterruptedException;
+    public TableResult getData(String[] references) throws InterruptedException;
 }

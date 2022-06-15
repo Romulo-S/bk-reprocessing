@@ -21,7 +21,7 @@ public final class Constants {
             "\tfrom\n" +
             "\t\tcerc2-book-prd-01.replica_spanner_book_transaction.Transaction t\n" +
             "\twhere\n" +
-            "\t\tt.contractReference in(${references})\n" +
+            "\t\tt.contractReference in(references)\n" +
             "\t\tand t.type in (0, 1)\n" +
             "\tgroup by\n" +
             "\t\tt.contractReference \n" +
