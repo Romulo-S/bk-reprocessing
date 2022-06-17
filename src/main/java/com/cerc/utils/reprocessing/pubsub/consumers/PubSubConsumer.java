@@ -43,7 +43,6 @@ public class PubSubConsumer {
     private TopicName topicName;
     private Subscriber subscriber;
 
-
     PubSubMessageCaseImpl pubSubMessageCase = new PubSubMessageCaseImpl();
 
     @Inject

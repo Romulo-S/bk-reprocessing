@@ -3,6 +3,7 @@ package com.cerc.utils.reprocessing.controllers;
 import com.cerc.utils.reprocessing.models.PubSubMessage;
 import com.cerc.utils.reprocessing.pubsub.consumers.PubSubConsumer;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import java.io.IOException;
@@ -14,8 +15,8 @@ import java.util.Arrays;
 public class PubSubMessageCaseImpl implements PubSubMessageCase {
 
     private static final Logger LOG = Logger.getLogger(PubSubMessageCaseImpl.class);
-    private final String TOPIC_TYPE = "transaction.new";
 
+    @ConfigProperty(name = "quarkus.topic.type")
     private String topic;
     private int slot;
     private ArrayList<String> referecesSlot = new ArrayList<>();
@@ -26,8 +27,6 @@ public class PubSubMessageCaseImpl implements PubSubMessageCase {
 
     @Override
     public void reprocess(PubSubMessage message, PubSubConsumer projectId) throws IOException {
-
-        topic = "TOPIC_TYPE";
 
         if (!Arrays.asList(typeAllowed).contains(message.getTransactionType())) {
             LOG.infov("Wrong Type >> ", message.getTransactionType());
