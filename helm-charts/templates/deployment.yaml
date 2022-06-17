@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ap008-bk-conciliation
+  namespace: ap008-bk-conciliation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ap008-bk-conciliation
+  template:
+    metadata:
+      labels:
+        app: ap008-bk-conciliation
+    spec:
+      terminationGracePeriodSeconds: 480    
+      volumes:
+        - name: google-cloud-key
+          secret:
+            secretName: ap008-bk-conciliation-secrets
+            items:
+              - key: ap008-bk-conciliation-key
+                path: key.json
+            defaultMode: 0440
+      containers:
+        - name: ap008-bk-conciliation
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          env:
+            - name: CADASTRA_USER
+              value: "{{ .Values.cadastra.user }}"
+            - name: CADASTRA_PASSWORD
+              value: "{{ .Values.cadastra.password }}"
+            - name: POSTGRES_USER
+              value: "{{ .Values.postgres.user }}"
+            - name: POSTGRES_PASSWORD
+              value: "{{ .Values.postgres.password }}"
+          imagePullPolicy: Always
+          resources:
+            requests:
+              cpu: {{ .Values.requests.cpu }}
+              memory: {{ .Values.requests.memory }}
+          volumeMounts:
+            - name: google-cloud-key
+              mountPath: {{ .Values.credential.path }}
+          envFrom:
+            - configMapRef:
+                name: ap008-bk-conciliation-configmap-{{ include "app.environment" . }}
+          ports:
+            - containerPort: 8080

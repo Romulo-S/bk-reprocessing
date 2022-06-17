@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ap008-bk-conciliation-configmap-staging
+  namespace: ap008-bk-conciliation
+data:
+  GOOGLE_APPLICATION_CREDENTIALS: /var/secrets/google/key.json
+  RECEIVER_SUBSCRIPTION: ap008-payer-conciliation-stg-sub
+  RECEIVER_PROJECT: cerc2-datalake-stg-01
+  SPANNER_INSTANCE: datalake-stg-spanner-01
+  SPANNER_DATABASE: cerc_datalake_bk_stg15
+  SPANNER_PROJECT: cerc2-datalake-stg-01
+  BUCKET_ERROS: cerc-datalake-stg-raw-2
+  BUCKET_LAKE: cerc-datalake-stg-raw-2
+  CADASTRA_URL: 10.19.32.21
+  ENV: stg
+  POSTGRES_HOST: 10.214.49.3
+  POSTGRES_PORT: '5432'
+  POSTGRES_DATABASE: postgres
+  TIO_TOPIC: projects/cerc2-datalake-stg-01/topics/tio-ap008-topic

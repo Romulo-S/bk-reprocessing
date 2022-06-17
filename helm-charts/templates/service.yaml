@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ap008-bk-conciliation-service
+  namespace: ap008-bk-conciliation
+spec:
+  type: LoadBalancer
+  selector:
+    app: ap008-bk-conciliation
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ap008-bk-conciliation-service-private
+  namespace: ap008-bk-conciliation
+  annotations:
+    cloud.google.com/load-balancer-type: "Internal"  
+spec:
+  type: LoadBalancer
+  selector:
+    app: ap008-bk-conciliation
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
