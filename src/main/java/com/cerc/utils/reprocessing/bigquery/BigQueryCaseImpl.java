@@ -24,8 +24,6 @@ public class BigQueryCaseImpl implements BigQueryCase{
 
         String referencesQuery = toString(references);
 
-
-
         QueryJobConfiguration queryConfig = QueryJobConfiguration.newBuilder(
                         Constants.query.replace("references",referencesQuery))
                 .setUseLegacySql(false)

@@ -22,7 +22,7 @@ credential:
 gcp:
   serviceAccount: datalake-stg-sa-bookkeeping-01
   setupServiceAccount: true
-  projectId: cerc2-datalake-stg-01
+  projectId: cerc2-book-stg-01
 
 requests:
   cpu: '400m'
@@ -36,3 +36,10 @@ autoscaling:
 imagePullSecrets: []
 
 environment: staging
+
+pubsub:
+  topics:
+    consumer: 'transaction.new'
+    producer: ''
+
+

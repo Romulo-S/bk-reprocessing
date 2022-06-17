@@ -12,7 +12,13 @@ image:
 gcp:
   serviceAccount: datalake-stg-sa-bookkeeping-01
   setupServiceAccount: true
-  projectId: cerc2-datalake-stg-01
+  projectId: cerc2-book-stg-01
+
+quarkus:
+  google:
+    cloud:
+      projectId:portal-326100
+
 
 requests:
   cpu: '400m'
@@ -23,4 +29,7 @@ autoscaling:
   maxReplicas: 15
   targetCPUUtilizationPercentage: 10
 
-environment: staging
+pubsub:
+  topics:
+    consumer: 'transaction.new'
+    producer: ''

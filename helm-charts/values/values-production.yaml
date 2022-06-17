@@ -12,7 +12,7 @@ image:
 gcp:
   serviceAccount: datalake-prd-sa-bookkeeping-01
   setupServiceAccount: true
-  projectId: cerc2-datalake-prd-01
+  projectId: cerc2-book-prd-01
 
 requests:
   cpu: '400m'
@@ -23,4 +23,7 @@ autoscaling:
   maxReplicas: 300
   targetCPUUtilizationPercentage: 10
 
-environment: staging
+pubsub:
+  topics:
+    consumer: 'transaction.new'
+    producer: ''

@@ -22,7 +22,7 @@ public class ReprocessingCaseImpl implements ReprocessingCase{
     public void searchAndSend(ArrayList<String> referecesSlot, PubSubMessage message, PubSubConsumer projectId) {
 
         try {
-            TableResult data = bigQueryCase.getData();
+            TableResult data = bigQueryCase.getData(message.getReferences());
 
             List<Payload> contractsToReprocess = generateJson.getContractsToReprocess(data, message);
 

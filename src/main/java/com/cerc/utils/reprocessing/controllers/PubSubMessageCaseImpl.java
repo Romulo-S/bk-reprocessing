@@ -16,8 +16,6 @@ public class PubSubMessageCaseImpl implements PubSubMessageCase {
 
     private static final Logger LOG = Logger.getLogger(PubSubMessageCaseImpl.class);
 
-    @ConfigProperty(name = "quarkus.topic.type")
-    private String topic;
     private int slot;
     private ArrayList<String> referecesSlot = new ArrayList<>();
 
@@ -43,7 +41,7 @@ public class PubSubMessageCaseImpl implements PubSubMessageCase {
 
                 Instant end = Instant.now();
                 Duration timeElapsed = Duration.between(start, end);
-
+                LOG.infov("DURATION: ", timeElapsed.toString());
             }
 
         }

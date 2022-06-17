@@ -3,7 +3,6 @@ package com.cerc.utils.reprocessing.pubsub.consumers;
 import com.cerc.utils.reprocessing.controllers.PubSubMessageCaseImpl;
 import com.cerc.utils.reprocessing.models.Payload;
 import com.cerc.utils.reprocessing.models.PubSubMessage;
-import com.cerc.utils.reprocessing.controllers.PubSubMessageCase;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 import org.jboss.logging.Logger;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import java.util.concurrent.TimeUnit;
 import java.util.stream.StreamSupport;
@@ -40,20 +38,34 @@ public class PubSubConsumer {
     @ConfigProperty(name = "quarkus.google.cloud.project-id")
     String projectId;// Inject the projectId property from application.properties
 
-    private TopicName topicName;
-    private Subscriber subscriber;
+    @ConfigProperty(name = "quarkus.topic.consumer")
+    String consumerTopic;
+
+    @ConfigProperty(name = "quarkus.topic.producer")
+    String producerTopic;
+
+    TopicName consumerTopicName;
+    TopicName producerTopicName;
+    Subscriber consumerSubscriber;
+    Subscriber producerSubscriber;
 
     PubSubMessageCaseImpl pubSubMessageCase = new PubSubMessageCaseImpl();
 
     @Inject
-    CredentialsProvider credentialsProvider;
+    CredentialsProvider consumerCredentialsProvider;
+
+    @Inject
+    CredentialsProvider producerCredentialsProvider;
 
 
     void onStart(@Observes StartupEvent ev) throws IOException {
         // Init topic and subscription, the topic must have been created before
 
-        topicName = TopicName.of(projectId, "contracts-created-topic");
-        ProjectSubscriptionName subscriptionName = initSubscription();
+        consumerTopicName = TopicName.of(projectId, consumerTopic);
+        producerTopicName = TopicName.of(projectId, producerTopic);
+
+        ProjectSubscriptionName subscriptionConsumerName = initConsumerSubscription(consumerTopic);
+        ProjectSubscriptionName subscriptionProducerName = initProducerSubscription(producerTopic);
 
         Jsonb jsonb = JsonbBuilder.create();
 
@@ -69,21 +81,24 @@ public class PubSubConsumer {
             consumer.ack();
 
         };
-        subscriber = Subscriber.newBuilder(subscriptionName, receiver).build();
-        subscriber.startAsync().awaitRunning();
+        consumerSubscriber = Subscriber.newBuilder(subscriptionConsumerName, receiver).build();
+        consumerSubscriber.startAsync().awaitRunning();
+
+        producerSubscriber = Subscriber.newBuilder(subscriptionProducerName, receiver).build();
+//        producerSubscriber.startAsync().awaitRunning();
     }
 
     void onStop(@Observes ShutdownEvent ev) {
         // Stop the subscription at destroy time
-        if (subscriber != null) {
-            subscriber.stopAsync();
+        if (consumerSubscriber != null) {
+            consumerSubscriber.stopAsync();
         }
     }
 
     public void pubsub(List<Payload> temp) throws IOException, InterruptedException {
         // Init a publisher to the topic
-        Publisher publisher = Publisher.newBuilder(topicName)
-                .setCredentialsProvider(credentialsProvider)
+        Publisher publisher = Publisher.newBuilder(producerTopicName)
+                .setCredentialsProvider(consumerCredentialsProvider)
                 .build();
         try {
             String jsonStr = JSONArray.toJSONString(temp);
@@ -108,8 +123,8 @@ public class PubSubConsumer {
 
     public void sendToPubSub(PubSubMessage temp) throws IOException, InterruptedException {
         // Init a publisher to the topic
-        Publisher publisher = Publisher.newBuilder(topicName)
-                .setCredentialsProvider(credentialsProvider)
+        Publisher publisher = Publisher.newBuilder(producerTopicName)
+                .setCredentialsProvider(consumerCredentialsProvider)
                 .build();
         try {
 
@@ -132,11 +147,11 @@ public class PubSubConsumer {
     }
 
 
-    private ProjectSubscriptionName initSubscription() throws IOException {
+    private ProjectSubscriptionName initConsumerSubscription(String topic) throws IOException {
         // List all existing subscriptions and create the 'test-subscription' if needed
-        ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, "contracts-created-topic");
+        ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, topic);
         SubscriptionAdminSettings subscriptionAdminSettings = SubscriptionAdminSettings.newBuilder()
-                .setCredentialsProvider(credentialsProvider)
+                .setCredentialsProvider(consumerCredentialsProvider)
                 .build();
         try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create(subscriptionAdminSettings)) {
             Iterable<Subscription> subscriptions = subscriptionAdminClient.listSubscriptions(ProjectName.of(projectId))
@@ -145,7 +160,26 @@ public class PubSubConsumer {
                     .filter(sub -> sub.getName().equals(subscriptionName.toString()))
                     .findFirst();
             if (!existing.isPresent()) {
-                subscriptionAdminClient.createSubscription(subscriptionName, topicName, PushConfig.getDefaultInstance(), 0);
+                subscriptionAdminClient.createSubscription(subscriptionName, consumerTopic, PushConfig.getDefaultInstance(), 0);
+            }
+        }
+        return subscriptionName;
+    }
+
+    private ProjectSubscriptionName initProducerSubscription(String topic) throws IOException {
+        // List all existing subscriptions and create the 'test-subscription' if needed
+        ProjectSubscriptionName subscriptionName = ProjectSubscriptionName.of(projectId, topic);
+        SubscriptionAdminSettings subscriptionAdminSettings = SubscriptionAdminSettings.newBuilder()
+                .setCredentialsProvider(producerCredentialsProvider)
+                .build();
+        try (SubscriptionAdminClient subscriptionAdminClient = SubscriptionAdminClient.create(subscriptionAdminSettings)) {
+            Iterable<Subscription> subscriptions = subscriptionAdminClient.listSubscriptions(ProjectName.of(projectId))
+                    .iterateAll();
+            Optional<Subscription> existing = StreamSupport.stream(subscriptions.spliterator(), false)
+                    .filter(sub -> sub.getName().equals(subscriptionName.toString()))
+                    .findFirst();
+            if (!existing.isPresent()) {
+                subscriptionAdminClient.createSubscription(subscriptionName, consumerTopic, PushConfig.getDefaultInstance(), 0);
             }
         }
         return subscriptionName;

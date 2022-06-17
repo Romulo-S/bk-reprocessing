@@ -5,16 +5,8 @@ metadata:
   namespace: ap008-bk-conciliation
 data:
   GOOGLE_APPLICATION_CREDENTIALS: /var/secrets/google/key.json
-  RECEIVER_SUBSCRIPTION: ap008-payer-conciliation-int-sub
-  RECEIVER_PROJECT: cerc2-datalake-int-01
-  SPANNER_INSTANCE: datalake-int-spanner-01
-  SPANNER_DATABASE: cerc_datalake_bk_int15
-  SPANNER_PROJECT: cerc2-datalake-int-01
-  BUCKET_ERROS: remessas_participantes_sem_bucket
-  BUCKET_LAKE: cerc-datalake-int-raw
-  CADASTRA_URL: 10.119.32.21
+  CONSUMER: '{{ .Values.pubsub.topics.consumer }}'
+  PRODUCER: '{{ .Values.pubsub.topics.producer }}'
+  PROJECT_ID: '{{ .Values.gcp.projectId }}'
   ENV: int
-  POSTGRES_HOST: 10.232.48.3
-  POSTGRES_PORT: '5432'
-  POSTGRES_DATABASE: postgres
-  TIO_TOPIC: projects/cerc2-datalake-int-01/topics/tio-ap008-int-topic-01
+
