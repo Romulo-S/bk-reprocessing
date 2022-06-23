@@ -1,13 +1,13 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: ap008-bk-conciliation-hpa
-  namespace: ap008-bk-conciliation
+  name: ops-panel-hpa
+  namespace: ops-panel
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: ap008-bk-conciliation
+    name: ops-panel
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   targetCPUUtilizationPercentage: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}

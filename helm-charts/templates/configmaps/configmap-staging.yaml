@@ -1,8 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ap008-bk-conciliation-configmap-staging
-  namespace: ap008-bk-conciliation
+  name: ops-panel-configmap-staging
+  namespace: ops-panel
 data:
   GOOGLE_APPLICATION_CREDENTIALS: /var/secrets/google/key.json
   CONSUMER:  '{{ .Values.pubsub.topics.consumer }}'

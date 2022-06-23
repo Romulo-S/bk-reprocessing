@@ -3,8 +3,8 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.cerc.utils.reprocessing</groupId>
-    <artifactId>bk-reprocessing</artifactId>
+    <groupId>com.cerc.utils.ops-panel</groupId>
+    <artifactId>ops-panel</artifactId>
     <version>1.0-SNAPSHOT</version>
     <properties>
         <compiler-plugin.version>3.8.1</compiler-plugin.version>

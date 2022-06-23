@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: gcr.io/cerc2-datalake-int-01/ap008-bk-conciliation
+  repository: gcr.io/cerc2-datalake-int-01/ops-panel
   tag: '19433'
   pullPolicy: IfNotPresent
 

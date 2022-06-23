@@ -10,11 +10,11 @@
 #
 # Then, build the image with:
 #
-# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/bk-reprocessing .
+# docker build -f src/main/docker/Dockerfile.native-micro -t quarkus/ops-panel .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8080:8080 quarkus/bk-reprocessing
+# docker run -i --rm -p 8080:8080 quarkus/ops-panel
 #
 ###
 FROM quay.io/quarkus/quarkus-micro-image:1.0
